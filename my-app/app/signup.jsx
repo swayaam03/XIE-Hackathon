@@ -2,12 +2,12 @@ import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-nati
 import React, { useState } from 'react'
 import { MaterialIcons, FontAwesome } from '@expo/vector-icons'
 import TextInputField from './components/TextInputField'
+import { Link } from 'expo-router'
 
 const Signup = () => {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [agreeTerms, setAgreeTerms] = useState(false)
   const [errors, setErrors] = useState({})
 
   const validateEmail = (email) => {
@@ -58,9 +58,6 @@ const Signup = () => {
       <View style={styles.content}>
         {/* Header with Back Button */}
         <View style={styles.headerContainer}>
-          <TouchableOpacity onPress={handleGoBack}>
-            <MaterialIcons name="arrow-back" size={24} color="#64748B" />
-          </TouchableOpacity>
           <Text style={styles.appName}>Civic Report</Text>
           <View style={{ width: 24 }} />
         </View>
@@ -99,6 +96,20 @@ const Signup = () => {
               errorMessage={errors.email}
             />
 
+            {/* Phone Number Input */}
+            <TextInputField
+              label="Phone Number"
+              placeholder="+91"
+              icon="phone"
+              value={password}
+              onChangeText={(text) => {
+                setPassword(text)
+                if (errors.password) setErrors({ ...errors, password: '' })
+              }}
+              secureTextEntry={true}
+              errorMessage={errors.password}
+            />
+
             {/* Password Input */}
             <TextInputField
               label="Password"
@@ -113,28 +124,6 @@ const Signup = () => {
               errorMessage={errors.password}
             />
 
-            {/* Terms Agreement */}
-            <View style={styles.termsContainer}>
-              <TouchableOpacity
-                style={[styles.checkbox, agreeTerms && styles.checkboxActive]}
-                onPress={() => {
-                  setAgreeTerms(!agreeTerms)
-                  if (errors.terms) setErrors({ ...errors, terms: '' })
-                }}
-              >
-                {agreeTerms && (
-                  <MaterialIcons name="check" size={14} color="#2563EB" />
-                )}
-              </TouchableOpacity>
-              <View style={styles.termsTextContainer}>
-                <Text style={styles.termsText}>I agree to the </Text>
-                <TouchableOpacity>
-                  <Text style={styles.termsLink}>Terms of Service</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            {errors.terms && <Text style={styles.errorMessage}>{errors.terms}</Text>}
-
             {/* Create Account Button */}
             <TouchableOpacity
               style={styles.signupButton}
@@ -144,14 +133,8 @@ const Signup = () => {
               <Text style={styles.signupButtonText}>Create account</Text>
             </TouchableOpacity>
 
-            {/* Divider */}
-            <View style={styles.dividerContainer}>
-              <View style={styles.divider} />
-              <Text style={styles.dividerText}>Or Sign in with</Text>
-              <View style={styles.divider} />
-            </View>
-
-            {/* Social Login Buttons */}
+            
+            {/* Social Login Buttons
             <View style={styles.socialContainer}>
               <TouchableOpacity style={styles.socialButton}>
                 <FontAwesome name="facebook" size={24} color="#1877F2" />
@@ -162,13 +145,15 @@ const Signup = () => {
               <TouchableOpacity style={styles.socialButton}>
                 <FontAwesome name="apple" size={24} color="#000000" />
               </TouchableOpacity>
-            </View>
+            </View> */}
 
             {/* Login Link */}
             <View style={styles.loginContainer}>
               <Text style={styles.loginText}>Already have an account? </Text>
               <TouchableOpacity onPress={handleGoBack}>
-                <Text style={styles.loginLink}>Login</Text>
+                <Link href={"/"}>
+                  <Text style={styles.loginLink}>Login</Text>
+                </Link>
               </TouchableOpacity>
             </View>
           </View>
@@ -183,7 +168,7 @@ export default Signup
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#707070',
+    backgroundColor: '#fffdfd',
   },
   content: {
     paddingVertical: 40,
@@ -191,14 +176,16 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
   },
   appName: {
-    fontSize: 24,
+    justifyContent: 'center',
+    fontSize: 38,
     fontWeight: '700',
     color: '#2563EB',
+    paddingTop: 75,
   },
   cardContainer: {
     backgroundColor: '#FFFFFF',

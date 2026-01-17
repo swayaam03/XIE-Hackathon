@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, TouchableOpacity, ScrollView, CheckBox } from '
 import React, { useState } from 'react'
 import { MaterialIcons, FontAwesome } from '@expo/vector-icons'
 import TextInputField from './components/TextInputField'
+import { Link } from 'expo-router';
 
 const Index = () => {
   const [email, setEmail] = useState('')
@@ -80,7 +81,7 @@ const Index = () => {
               errorMessage={errors.password}
             />
 
-            {/* Remember Me & Forgot Password */}
+            {/* Remember Me & Forgot Password
             <View style={styles.optionsRow}>
               <View style={styles.rememberContainer}>
                 <TouchableOpacity
@@ -96,7 +97,7 @@ const Index = () => {
               <TouchableOpacity>
                 <Text style={styles.forgotPassword}>Forgot password?</Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
 
             {/* Login Button */}
             <TouchableOpacity
@@ -111,7 +112,9 @@ const Index = () => {
             <View style={styles.signupContainer}>
               <Text style={styles.signupText}>Don't have an account? </Text>
               <TouchableOpacity>
+                <Link href={"/signup"}>
                 <Text style={styles.signupLink}>Sign up</Text>
+                </Link>
               </TouchableOpacity>
             </View>
           </View>
@@ -135,10 +138,10 @@ const styles = StyleSheet.create({
   logoSection: {
     alignItems: 'center',
     marginBottom: 24,
-    paddingTop: 120,
+    paddingTop: 140,
   },
   appName: {
-    fontSize: 28,
+    fontSize: 38,
     fontWeight: '700',
     color: '#2563EB',
   },
