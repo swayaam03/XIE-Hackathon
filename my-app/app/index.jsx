@@ -48,7 +48,7 @@ const Index = () => {
         {/* Card Container */}
         <View style={styles.cardContainer}>
           {/* Heading */}
-          <Text style={styles.heading}>Welcome to Civic Report login now!</Text>
+          <Text style={styles.heading}>Login to your account</Text>
 
           {/* Form Section */}
           <View style={styles.formSection}>
@@ -106,27 +106,7 @@ const Index = () => {
             >
               <Text style={styles.loginButtonText}>Login</Text>
             </TouchableOpacity>
-
-            {/* Divider */}
-            <View style={styles.dividerContainer}>
-              <View style={styles.divider} />
-              <Text style={styles.dividerText}>Or Sign in with</Text>
-              <View style={styles.divider} />
-            </View>
-
-            {/* Social Login Buttons */}
-            <View style={styles.socialContainer}>
-              <TouchableOpacity style={styles.socialButton}>
-                <FontAwesome name="facebook" size={24} color="#1877F2" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.socialButton}>
-                <FontAwesome name="google" size={24} color="#EA4335" />
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.socialButton}>
-                <FontAwesome name="apple" size={24} color="#000000" />
-              </TouchableOpacity>
-            </View>
-
+            
             {/* Sign Up Link */}
             <View style={styles.signupContainer}>
               <Text style={styles.signupText}>Don't have an account? </Text>
@@ -155,7 +135,7 @@ const styles = StyleSheet.create({
   logoSection: {
     alignItems: 'center',
     marginBottom: 24,
-    paddingTop: 80,
+    paddingTop: 120,
   },
   appName: {
     fontSize: 28,
@@ -227,7 +207,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   loginButtonText: {
-    fontSize: 15,
+    fontSize: 20,
     fontWeight: '600',
     color: '#FFFFFF',
   },

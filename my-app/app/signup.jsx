@@ -151,7 +151,7 @@ const Signup = () => {
               <View style={styles.divider} />
             </View>
 
-            Social Login Buttons
+            {/* Social Login Buttons */}
             <View style={styles.socialContainer}>
               <TouchableOpacity style={styles.socialButton}>
                 <FontAwesome name="facebook" size={24} color="#1877F2" />
