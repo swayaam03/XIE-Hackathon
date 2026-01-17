@@ -1,12 +1,13 @@
-import { StyleSheet, Text, View, TouchableOpacity, ScrollView, CheckBox } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native'
 import React, { useState } from 'react'
 import { MaterialIcons, FontAwesome } from '@expo/vector-icons'
 import TextInputField from './components/TextInputField'
 
-const Index = () => {
+const Signup = () => {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [rememberMe, setRememberMe] = useState(false)
+  const [agreeTerms, setAgreeTerms] = useState(false)
   const [errors, setErrors] = useState({})
 
   const validateEmail = (email) => {
@@ -14,8 +15,14 @@ const Index = () => {
     return emailRegex.test(email)
   }
 
-  const handleLogin = () => {
+  const handleSignup = () => {
     const newErrors = {}
+
+    if (!name) {
+      newErrors.name = 'Name is required'
+    } else if (name.length < 2) {
+      newErrors.name = 'Name must be at least 2 characters'
+    }
 
     if (!email) {
       newErrors.email = 'Email is required'
@@ -29,29 +36,55 @@ const Index = () => {
       newErrors.password = 'Password must be at least 6 characters'
     }
 
+    if (!agreeTerms) {
+      newErrors.terms = 'You must agree to the Terms of Service'
+    }
+
     setErrors(newErrors)
 
     if (Object.keys(newErrors).length === 0) {
-      console.log('Login attempt:', { email, password, rememberMe })
-      // Add login logic here
+      console.log('Signup attempt:', { name, email, password, agreeTerms })
+      // Add signup logic here
     }
+  }
+
+  const handleGoBack = () => {
+    // Handle back navigation
+    console.log('Go back to login')
   }
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.content}>
-        {/* Logo Section */}
-        <View style={styles.logoSection}>
+        {/* Header with Back Button */}
+        <View style={styles.headerContainer}>
+          <TouchableOpacity onPress={handleGoBack}>
+            <MaterialIcons name="arrow-back" size={24} color="#64748B" />
+          </TouchableOpacity>
           <Text style={styles.appName}>Civic Report</Text>
+          <View style={{ width: 24 }} />
         </View>
 
         {/* Card Container */}
         <View style={styles.cardContainer}>
           {/* Heading */}
-          <Text style={styles.heading}>Welcome to Civic Report login now!</Text>
+          <Text style={styles.heading}>Create an Account?</Text>
 
           {/* Form Section */}
           <View style={styles.formSection}>
+            {/* Name Input */}
+            <TextInputField
+              label="Name"
+              placeholder="Johan orindo"
+              icon="person"
+              value={name}
+              onChangeText={(text) => {
+                setName(text)
+                if (errors.name) setErrors({ ...errors, name: '' })
+              }}
+              errorMessage={errors.name}
+            />
+
             {/* Email Input */}
             <TextInputField
               label="Email"
@@ -80,31 +113,35 @@ const Index = () => {
               errorMessage={errors.password}
             />
 
-            {/* Remember Me & Forgot Password */}
-            <View style={styles.optionsRow}>
-              <View style={styles.rememberContainer}>
-                <TouchableOpacity
-                  style={[styles.checkbox, rememberMe && styles.checkboxActive]}
-                  onPress={() => setRememberMe(!rememberMe)}
-                >
-                  {rememberMe && (
-                    <MaterialIcons name="check" size={14} color="#2563EB" />
-                  )}
-                </TouchableOpacity>
-                <Text style={styles.rememberText}>Remember me</Text>
-              </View>
-              <TouchableOpacity>
-                <Text style={styles.forgotPassword}>Forgot password?</Text>
+            {/* Terms Agreement */}
+            <View style={styles.termsContainer}>
+              <TouchableOpacity
+                style={[styles.checkbox, agreeTerms && styles.checkboxActive]}
+                onPress={() => {
+                  setAgreeTerms(!agreeTerms)
+                  if (errors.terms) setErrors({ ...errors, terms: '' })
+                }}
+              >
+                {agreeTerms && (
+                  <MaterialIcons name="check" size={14} color="#2563EB" />
+                )}
               </TouchableOpacity>
+              <View style={styles.termsTextContainer}>
+                <Text style={styles.termsText}>I agree to the </Text>
+                <TouchableOpacity>
+                  <Text style={styles.termsLink}>Terms of Service</Text>
+                </TouchableOpacity>
+              </View>
             </View>
+            {errors.terms && <Text style={styles.errorMessage}>{errors.terms}</Text>}
 
-            {/* Login Button */}
+            {/* Create Account Button */}
             <TouchableOpacity
-              style={styles.loginButton}
-              onPress={handleLogin}
+              style={styles.signupButton}
+              onPress={handleSignup}
               activeOpacity={0.8}
             >
-              <Text style={styles.loginButtonText}>Login</Text>
+              <Text style={styles.signupButtonText}>Create account</Text>
             </TouchableOpacity>
 
             {/* Divider */}
@@ -114,7 +151,7 @@ const Index = () => {
               <View style={styles.divider} />
             </View>
 
-            {/* Social Login Buttons */}
+            Social Login Buttons
             <View style={styles.socialContainer}>
               <TouchableOpacity style={styles.socialButton}>
                 <FontAwesome name="facebook" size={24} color="#1877F2" />
@@ -127,11 +164,11 @@ const Index = () => {
               </TouchableOpacity>
             </View>
 
-            {/* Sign Up Link */}
-            <View style={styles.signupContainer}>
-              <Text style={styles.signupText}>Don't have an account? </Text>
-              <TouchableOpacity>
-                <Text style={styles.signupLink}>Sign up</Text>
+            {/* Login Link */}
+            <View style={styles.loginContainer}>
+              <Text style={styles.loginText}>Already have an account? </Text>
+              <TouchableOpacity onPress={handleGoBack}>
+                <Text style={styles.loginLink}>Login</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -141,24 +178,25 @@ const Index = () => {
   )
 }
 
-export default Index
+export default Signup
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F7FA',
+    backgroundColor: '#707070',
   },
   content: {
     paddingVertical: 40,
     paddingHorizontal: 20,
   },
-  logoSection: {
+  headerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 24,
-    paddingTop: 80,
   },
   appName: {
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: '700',
     color: '#2563EB',
   },
@@ -183,17 +221,11 @@ const styles = StyleSheet.create({
   formSection: {
     gap: 0,
   },
-  optionsRow: {
+  termsContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 24,
+    alignItems: 'flex-start',
+    marginBottom: 20,
     marginTop: -4,
-  },
-  rememberContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
   },
   checkbox: {
     width: 18,
@@ -203,30 +235,47 @@ const styles = StyleSheet.create({
     borderColor: '#CBD5E1',
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 2,
+    marginRight: 8,
+    flexShrink: 0,
   },
   checkboxActive: {
     backgroundColor: '#EFF6FF',
     borderColor: '#2563EB',
   },
-  rememberText: {
+  termsTextContainer: {
+    flexDirection: 'row',
+    flex: 1,
+    flexWrap: 'wrap',
+  },
+  termsText: {
     fontSize: 13,
-    color: '#475569',
+    color: '#64748B',
     fontWeight: '500',
   },
-  forgotPassword: {
+  termsLink: {
     fontSize: 13,
     color: '#2563EB',
     fontWeight: '600',
+    textDecorationLine: 'underline',
   },
-  loginButton: {
+  errorMessage: {
+    fontSize: 12,
+    color: '#EF4444',
+    marginTop: -12,
+    marginBottom: 12,
+    fontWeight: '500',
+  },
+  signupButton: {
     backgroundColor: '#2563EB',
     paddingVertical: 12,
     borderRadius: 24,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 20,
+    marginTop: 8,
   },
-  loginButtonText: {
+  signupButtonText: {
     fontSize: 15,
     fontWeight: '600',
     color: '#FFFFFF',
@@ -263,16 +312,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E2E8F0',
   },
-  signupContainer: {
+  loginContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  signupText: {
+  loginText: {
     fontSize: 13,
     color: '#64748B',
   },
-  signupLink: {
+  loginLink: {
     fontSize: 13,
     color: '#2563EB',
     fontWeight: '600',
