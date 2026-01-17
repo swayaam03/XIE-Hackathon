@@ -3,9 +3,7 @@ import React from 'react'
 
 const Index = () => {
   return (
-    <
-        
-    >
+    <View>
       <Text>Hackathon winners</Text>
     </View>
   )
