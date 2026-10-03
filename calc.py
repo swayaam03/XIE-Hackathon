@@ -1,5 +1,5 @@
 def calculate(a, b):
-    return a + b
+    return a * b
 
 
 def main():
