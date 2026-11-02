@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Merge History - MergeMind</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Header Navigation -->
+  <header>
+    <div class="navbar">
+      <a href="index.html" class="brand">
+        <span class="brand-icon">⚡</span>
+        <span>MergeMind</span>
+        <span class="brand-badge">History</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Dashboard</a></li>
+        <li><a href="conflicts.html">Conflict Workbench</a></li>
+        <li><a href="history.html">Merge History</a></li>
+        <li><a href="settings.html">Settings</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <div class="hero">
+      <div class="hero-content">
+        <h1>Merge Audit History</h1>
+        <p>Comprehensive trace log of all Git conflicts tested, analyzed, and resolved by MergeMind.</p>
+      </div>
+      <div class="hero-actions">
+        <button id="clear-history-btn" class="btn btn-danger">🗑️ Clear Logs</button>
+        <button id="export-json-btn" class="btn btn-secondary">📥 Export JSON</button>
+      </div>
+    </div>
+
+    <!-- Filter & Search Bar -->
+    <div class="card" style="padding: 1rem 1.5rem; margin-bottom: 1.5rem;">
+      <div style="display: flex; gap: 1rem; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+        <div style="flex: 1; min-width: 200px;">
+          <input type="text" id="search-input" class="form-control" placeholder="Search by file name, branch, or ID...">
+        </div>
+        <div>
+          <select id="filter-status" class="form-control" style="width: auto;">
+            <option value="all">All Resolutions</option>
+            <option value="Auto-Resolved">Auto-Resolved</option>
+            <option value="Manual Review">Manual Review</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- History Table -->
+    <div class="card">
+      <div class="card-title">
+        <span>Resolution Activity Log</span>
+        <span id="log-count" class="badge badge-info">0 records</span>
+      </div>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Merge ID</th>
+              <th>Conflicting Target</th>
+              <th>Incoming Branch</th>
+              <th>Resolution Engine</th>
+              <th>Status</th>
+              <th>Timestamp</th>
+            </tr>
+          </thead>
+          <tbody id="history-tbody">
+            <!-- Dynamic rows inserted here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>MergeMind Testbed • Built for testing and evaluating intelligent code merge workflows • 2026</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    // Initial sample logs if storage is empty
+    const defaultHistory = [
+      { id: "MM-9102", file: "calc.py", branch: "feature/divide", strategy: "AI Semantic AST", status: "Auto-Resolved", date: "10:14 PM" },
+      { id: "MM-8471", file: "components/Header.jsx", branch: "ui/redesign-v2", strategy: "JSX Tree Unification", status: "Auto-Resolved", date: "09:42 PM" },
+      { id: "MM-7215", file: "package.json", branch: "chore/deps-bump", strategy: "SemVer Reconciliation", status: "Auto-Resolved", date: "08:15 PM" },
+      { id: "MM-6104", file: "services/api.js", branch: "fix/timeout-retry", strategy: "Control Flow Analysis", status: "Manual Review", date: "06:30 PM" }
+    ];
+
+    function loadHistory() {
+      const stored = localStorage.getItem('mergemind_history');
+      if (!stored) {
+        localStorage.setItem('mergemind_history', JSON.stringify(defaultHistory));
+        return defaultHistory;
+      }
+      return JSON.parse(stored);
+    }
+
+    function renderTable() {
+      const list = loadHistory();
+      const tbody = document.getElementById('history-tbody');
+      const searchTerm = document.getElementById('search-input').value.toLowerCase();
+      const statusFilter = document.getElementById('filter-status').value;
+      
+      tbody.innerHTML = '';
+      
+      const filtered = list.filter(item => {
+        const matchesSearch = item.file.toLowerCase().includes(searchTerm) || 
+                              item.branch.toLowerCase().includes(searchTerm) || 
+                              item.id.toLowerCase().includes(searchTerm);
+        const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
+        return matchesSearch && matchesStatus;
+      });
+
+      document.getElementById('log-count').textContent = `${filtered.length} records`;
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: var(--text-muted); padding: 2rem;">No merge logs found.</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(row => {
+        const tr = document.createElement('tr');
+        const badgeClass = row.status.includes('Auto') ? 'badge-success' : 'badge-warning';
+        tr.innerHTML = `
+          <td><code>${row.id}</code></td>
+          <td><strong>${row.file}</strong></td>
+          <td><span style="color: var(--info); font-family: var(--font-mono); font-size: 0.85rem;">${row.branch}</span></td>
+          <td>${row.strategy}</td>
+          <td><span class="badge ${badgeClass}">${row.status}</span></td>
+          <td style="color: var(--text-muted); font-size: 0.85rem;">${row.date}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById('search-input').addEventListener('input', renderTable);
+    document.getElementById('filter-status').addEventListener('change', renderTable);
+
+    document.getElementById('clear-history-btn').addEventListener('click', () => {
+      localStorage.setItem('mergemind_history', JSON.stringify([]));
+      renderTable();
+      showToast('Merge history logs cleared', 'warning');
+    });
+
+    document.getElementById('export-json-btn').addEventListener('click', () => {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(loadHistory(), null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", "mergemind-test-history.json");
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      showToast('Exported history as JSON!', 'success');
+    });
+
+    renderTable();
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - MergeMind</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Header Navigation -->
+  <header>
+    <div class="navbar">
+      <a href="index.html" class="brand">
+        <span class="brand-icon">⚡</span>
+        <span>MergeMind</span>
+        <span class="brand-badge">Settings</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Dashboard</a></li>
+        <li><a href="conflicts.html">Conflict Workbench</a></li>
+        <li><a href="history.html">Merge History</a></li>
+        <li><a href="settings.html">Settings</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <div class="hero">
+      <div class="hero-content">
+        <h1>MergeMind Test Settings</h1>
+        <p>Configure model parameters, automated verification rules, and resolution heuristics.</p>
+      </div>
+      <div class="hero-actions">
+        <button id="save-settings-btn" class="btn btn-primary">💾 Save Configuration</button>
+        <button id="reset-settings-btn" class="btn btn-secondary">↺ Restore Defaults</button>
+      </div>
+    </div>
+
+    <!-- AI Heuristics Configuration -->
+    <div class="card">
+      <div class="card-title">
+        <span>🤖 AI Model & Heuristics</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="model-select">Primary Reasoning Model</label>
+        <p class="form-desc">Select the LLM or AST engine backend used to resolve conflicting hunks.</p>
+        <select id="model-select" class="form-control">
+          <option value="Gemini 1.5 Pro">Gemini 1.5 Pro (Recommended - 2M Context)</option>
+          <option value="Claude 3.5 Sonnet">Claude 3.5 Sonnet</option>
+          <option value="GPT-4o">GPT-4o</option>
+          <option value="Local DeepSeek Coder">Local DeepSeek-Coder (Ollama)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="strategy-select">Conflict Resolution Strategy</label>
+        <p class="form-desc">Control how aggressive MergeMind is when merging syntactic differences.</p>
+        <select id="strategy-select" class="form-control">
+          <option value="hybrid">Hybrid Intent-Preserving (Merges non-overlapping logic into unified functions)</option>
+          <option value="semantic">Semantic Tree Only (AST node matching without code synthesis)</option>
+          <option value="conservative">Conservative 3-Way (Falls back to prompt user on any ambiguity)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="confidence-range">Minimum Confidence Threshold: <span id="confidence-val" style="color: var(--info); font-weight: bold;">85%</span></label>
+        <p class="form-desc">Conflicts with resolution confidence below this score will trigger manual review warnings.</p>
+        <input type="range" id="confidence-range" min="50" max="100" value="85" style="width: 100%; accent-color: var(--accent-primary);">
+      </div>
+    </div>
+
+    <!-- Safety & Verification -->
+    <div class="card">
+      <div class="card-title">
+        <span>🛡️ Automated Verification Guardrails</span>
+      </div>
+
+      <label class="form-check">
+        <input type="checkbox" id="check-ast" checked>
+        <div>
+          <strong>Run AST & Syntax Validator</strong>
+          <p class="form-desc" style="margin-bottom: 0;">Automatically verifies merged code parses without syntax errors before outputting.</p>
+        </div>
+      </label>
+
+      <label class="form-check">
+        <input type="checkbox" id="check-auto-backup" checked>
+        <div>
+          <strong>Generate Safety Backup Branch</strong>
+          <p class="form-desc" style="margin-bottom: 0;">Creates a temporary <code>mergemind-backup/&lt;branch&gt;</code> before applying commits.</p>
+        </div>
+      </label>
+
+      <label class="form-check">
+        <input type="checkbox" id="check-tests">
+        <div>
+          <strong>Execute Unit Test Suite (e.g. pytest / npm test)</strong>
+          <p class="form-desc" style="margin-bottom: 0;">Runs workspace test suite to verify no functional regressions are introduced.</p>
+        </div>
+      </label>
+    </div>
+
+    <!-- Workspace Connection Card -->
+    <div class="card">
+      <div class="card-title">
+        <span>📂 Workspace & Git Integration</span>
+      </div>
+      <div style="font-size: 0.9rem; line-height: 1.8;">
+        <div><strong>Current Working Directory:</strong> <code style="font-family: var(--font-mono); color: var(--text-secondary);">d:\Swayam\Projects\WEB Dev\XIE-Hackathon</code></div>
+        <div><strong>Connected Git Remote:</strong> <code style="font-family: var(--font-mono); color: var(--text-secondary);">https://github.com/swayaam03/XIE-Hackathon.git</code></div>
+        <div><strong>Active Branch:</strong> <span class="badge badge-success">main</span></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <p>MergeMind Testbed • Built for testing and evaluating intelligent code merge workflows • 2026</p>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    const modelSelect = document.getElementById('model-select');
+    const strategySelect = document.getElementById('strategy-select');
+    const confidenceRange = document.getElementById('confidence-range');
+    const confidenceVal = document.getElementById('confidence-val');
+    const checkAst = document.getElementById('check-ast');
+    const checkBackup = document.getElementById('check-auto-backup');
+    const checkTests = document.getElementById('check-tests');
+
+    confidenceRange.addEventListener('input', (e) => {
+      confidenceVal.textContent = e.target.value + '%';
+    });
+
+    function loadForm() {
+      const s = getSettings();
+      modelSelect.value = s.aiModel || 'Gemini 1.5 Pro';
+      strategySelect.value = s.mergeStrategy || 'hybrid';
+      if (s.confidence) {
+        confidenceRange.value = s.confidence;
+        confidenceVal.textContent = s.confidence + '%';
+      }
+      if (s.astCheck !== undefined) checkAst.checked = s.astCheck;
+      if (s.autoBackup !== undefined) checkBackup.checked = s.autoBackup;
+      if (s.runTests !== undefined) checkTests.checked = s.runTests;
+    }
+
+    document.getElementById('save-settings-btn').addEventListener('click', () => {
+      const s = {
+        aiModel: modelSelect.value,
+        mergeStrategy: strategySelect.value,
+        confidence: confidenceRange.value,
+        astCheck: checkAst.checked,
+        autoBackup: checkBackup.checked,
+        runTests: checkTests.checked
+      };
+      saveSettings(s);
+      showToast('Settings saved successfully!', 'success');
+    });
+
+    document.getElementById('reset-settings-btn').addEventListener('click', () => {
+      localStorage.removeItem('mergemind_settings');
+      confidenceRange.value = 85;
+      confidenceVal.textContent = '85%';
+      checkAst.checked = true;
+      checkBackup.checked = true;
+      checkTests.checked = false;
+      modelSelect.value = 'Gemini 1.5 Pro';
+      strategySelect.value = 'hybrid';
+      showToast('Settings restored to defaults', 'info');
+    });
+
+    loadForm();
+  </script>
+</body>
+</html>
+
