@@ -14,3 +14,4 @@ const styles = StyleSheet.create({
   box: { flex: 1, backgroundColor: '#ffeedd', padding: 20 },
   text: { fontSize: 18, color: '#aa3300', fontWeight: 'bold' }
 })
+
